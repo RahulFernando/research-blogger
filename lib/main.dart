@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:research_blogger/screens/signIn.dart';
+import './router.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MyApp(
+      router: AppRouter(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppRouter router;
+
+  const MyApp({super.key, required this.router});
 
   // This widget is the root of your application.
   @override
@@ -17,8 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SignIn(),
+      onGenerateRoute: router.generateRoute,
     );
   }
 }
-

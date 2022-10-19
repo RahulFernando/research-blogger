@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:research_blogger/constants.dart';
 import 'package:research_blogger/utils/colorUtils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:research_blogger/widgets/AuthOption.dart';
@@ -56,7 +57,7 @@ class _SignInState extends State<SignIn> {
                 const SizedBox(height: 20,),
                 reusableAuthButton(context, "SIGN IN", () => {}),
                 const SizedBox(height: 25,),
-                authOption("Don't have an account? ", "Sign Up", () => {}),
+                authOption("Don't have an account? ", "Sign Up", () => Navigator.pushNamed(context, SIGN_UP_SCREEN)),
                 const SizedBox(height: 10,),
               ],
             ),
