@@ -49,8 +49,8 @@ class _SignInState extends State<SignIn> {
                 const SizedBox(
                   height: 50,
                 ),
-                reusableTextField("Enter Username", Icons.verified_user, false,
-                    _userNameController, TextInputType.name),
+                reusableTextField("Enter Email", Icons.verified_user, false,
+                    _userNameController, TextInputType.emailAddress),
                 const SizedBox(height: 20,),
                 reusableTextField("Enter Password", Icons.lock, true,
                     _passwordNameController, TextInputType.visiblePassword),
