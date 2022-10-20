@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:research_blogger/router.dart';
-import 'package:research_blogger/screens/signIn.dart';
 
 void main() {
   runApp(MyApp(router: AppRouter(),));
