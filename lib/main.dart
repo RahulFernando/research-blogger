@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import './router.dart';
+import 'package:research_blogger/router.dart';
+import 'package:research_blogger/screens/signIn.dart';
 
 void main() {
-  runApp(
-    MyApp(
-      router: AppRouter(),
-    ),
-  );
+  runApp(MyApp(router: AppRouter(),));
 }
 
 class MyApp extends StatelessWidget {
@@ -27,3 +24,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
