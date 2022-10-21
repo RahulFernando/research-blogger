@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:research_blogger/constants.dart';
+import 'package:research_blogger/service/authService.dart';
 import 'package:research_blogger/utils/colorUtils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:research_blogger/widgets/AuthOption.dart';
 import 'package:research_blogger/widgets/Button.dart';
 import 'package:research_blogger/widgets/Logo.dart';
 import 'package:research_blogger/widgets/TextField.dart';
+
+import '../models/response.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -16,8 +19,10 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   // controllers
-  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _emailNameController = TextEditingController();
   final TextEditingController _passwordNameController = TextEditingController();
+
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,20 +55,80 @@ class _SignInState extends State<SignIn> {
                   height: 50,
                 ),
                 reusableTextField("Enter Email", Icons.email_rounded, false,
-                    _userNameController, TextInputType.emailAddress),
-                const SizedBox(height: 20,),
+                    _emailNameController, TextInputType.emailAddress),
+                const SizedBox(
+                  height: 20,
+                ),
                 reusableTextField("Enter Password", Icons.lock, true,
                     _passwordNameController, TextInputType.visiblePassword),
-                const SizedBox(height: 20,),
-                reusableAuthButton(context, "SIGN IN", () => {}),
-                const SizedBox(height: 25,),
-                authOption("Don't have an account? ", "Sign Up", () => Navigator.pushNamed(context, SIGN_UP_SCREEN)),
-                const SizedBox(height: 10,),
+                const SizedBox(
+                  height: 20,
+                ),
+                loading
+                    ? const CircularProgressIndicator()
+                    : reusableAuthButton(context, "SIGN IN", () async {
+                        var validity = validate(_emailNameController.text,
+                            _passwordNameController.text);
+
+                        if (validity.isValid) {
+                          setState(() {
+                            loading = true;
+                          });
+
+                          var response = await AuthService.login(
+                              email: _emailNameController.text,
+                              password: _passwordNameController.text);
+
+                          if (response.status == 200) {
+                            setState(() {
+                              loading = true;
+                            });
+                            Navigator.pushReplacementNamed(context, HOME_SCREEN);
+                          }
+
+                          if (response.status == 500) {
+                            setState(() {
+                              loading = true;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(response.message as String),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                          }
+                        }
+
+                        if (!validity.isValid) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(validity.message),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                        }
+                      }),
+                const SizedBox(
+                  height: 25,
+                ),
+                authOption("Don't have an account? ", "Sign Up",
+                    () => Navigator.pushNamed(context, SIGN_UP_SCREEN)),
+                const SizedBox(
+                  height: 10,
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Validate validate(String email, String password) {
+    if (email.isEmpty || password.isEmpty) {
+      return Validate(isValid: false, message: "All fields are required");
+    }
+
+    return Validate(isValid: true, message: "");
   }
 }
