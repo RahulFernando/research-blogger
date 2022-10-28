@@ -53,4 +53,22 @@ class AuthService {
 
     return response;
   }
+
+  static Future<Response> deleteUser(String password) async {
+    var user = FirebaseAuth.instance
+        .currentUser;
+
+    var credentials = EmailAuthProvider.credential(
+        email: user?.email as String, password: password);
+    await
+    user?.reauthenticateWithCredential(credentials);
+
+    await user?.delete();
+
+    Response response = Response();
+    response.status = 200;
+    response.message = "Account removed";
+
+    return response;
+  }
 }

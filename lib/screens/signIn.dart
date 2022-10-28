@@ -88,7 +88,7 @@ class _SignInState extends State<SignIn> {
 
                           if (response.status == 500) {
                             setState(() {
-                              loading = true;
+                              loading = false;
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
