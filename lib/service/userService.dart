@@ -21,4 +21,41 @@ class UserService {
 
     return response;
   }
+
+  static Future<Response> getUser(String uid) async {
+    Response response = Response();
+
+   await  _collectionReference.where("uid", isEqualTo: uid).get().then((doc) {
+     response.status = 200;
+     response.message = "User fetched success";
+     response.data = User.fromDocumentSnapshot(doc.docs.first as DocumentSnapshot<Map<String, dynamic>>);
+   });
+
+    return response;
+  }
+
+  static Future<Response> updateUser(User user) async {
+    Response response = Response();
+
+    await _collectionReference.doc(user.id).update(user.toJson()).then((res) {
+      response.status = 200;
+      response.message = "User updated";
+    }).catchError((e) {
+      response.status = 500;
+      response.message = e.toString();
+    });
+
+    return response;
+  }
+
+  static Future<Response> deleteUser(String id) async {
+    Response response = Response();
+
+    await _collectionReference.doc(id).delete();
+
+    response.status = 200;
+    response.message = "Delete user";
+
+    return response;
+  }
 }
