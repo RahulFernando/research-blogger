@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:research_blogger/screens/blog.dart';
 import 'package:research_blogger/screens/profile.dart';
 
 import '../utils/colorUtils.dart';
@@ -16,7 +17,7 @@ class _HomeState extends State<Home> {
 
   final screens = [
     const Center(child: Text("Home"),),
-    const Center(child: Text("New"),),
+    const Blog(),
     const Profile(),
   ];
 
