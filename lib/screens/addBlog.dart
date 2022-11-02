@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:research_blogger/models/article.dart';
 import 'package:research_blogger/models/idea.dart';
@@ -55,11 +54,11 @@ class _AddBlogState extends State<AddBlog> {
   }
 
   Future<String> uploadImage() async {
-    String id = Uuid().v4();
-    final ref = FirebaseStorage.instance.ref().child('images/${id}');
-    ref.putFile(File(image!.path!));
+    String id = const Uuid().v4();
+    final ref = FirebaseStorage.instance.ref().child('images/$id');
+    UploadTask task = ref.putFile(File(image!.path!));
 
-    return id;
+    return await (await task).ref.getDownloadURL();
   }
 
   @override
@@ -135,8 +134,10 @@ class _AddBlogState extends State<AddBlog> {
                   setState(() {
                     isLoading = true;
                   });
-                  var response = await IdeaService.create(
-                      Idea(description: _ideaController.text));
+                  var userId = FirebaseAuth.instance.currentUser?.uid;
+                  var response = await IdeaService.create(Idea(
+                      description: _ideaController.text,
+                      uid: userId as String));
 
                   if (response.status == 201) {
                     setState(() {
@@ -211,9 +212,11 @@ class _AddBlogState extends State<AddBlog> {
                     setState(() {
                       isLoading = true;
                     });
+                    var userId = FirebaseAuth.instance.currentUser?.uid;
                     var response = await ResearchService.create(Research(
                         category: profession,
-                        description: _researchController.text));
+                        description: _researchController.text,
+                        uid: userId as String));
 
                     if (response.status == 201) {
                       setState(() {
@@ -289,9 +292,8 @@ class _AddBlogState extends State<AddBlog> {
                       isLoading = true;
                     });
 
-
-                    var response = await ArticleService.create(
-                        Article(description: _articleController.text, image: imageId));
+                    var response = await ArticleService.create(Article(
+                        description: _articleController.text, image: imageId));
 
                     if (response.status == 201) {
                       setState(() {
