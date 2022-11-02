@@ -34,6 +34,18 @@ class UserService {
     return response;
   }
 
+  static Future<Response> getUserByName(String name) async {
+    Response response = Response();
+
+    await  _collectionReference.where("userName", isEqualTo: name).get().then((doc) {
+      response.status = 200;
+      response.message = "User fetched success";
+      response.data = User.fromDocumentSnapshot(doc.docs.first as DocumentSnapshot<Map<String, dynamic>>);
+    });
+
+    return response;
+  }
+
   static Future<Response> updateUser(User user) async {
     Response response = Response();
 
