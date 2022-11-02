@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:research_blogger/models/article.dart';
-import 'package:research_blogger/models/idea.dart';
 import 'package:research_blogger/models/response.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-final CollectionReference _collectionReference = _firestore.collection("articles");
+final CollectionReference _collectionReference = _firestore.collection(
+    "articles");
 
 class ArticleService {
   static Future<Response> create(Article article) async {
