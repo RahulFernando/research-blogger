@@ -5,6 +5,7 @@ import 'package:research_blogger/screens/addBlog.dart';
 import 'package:research_blogger/screens/authorProfile.dart';
 import 'package:research_blogger/screens/blogDetail.dart';
 import 'package:research_blogger/screens/home.dart';
+import 'package:research_blogger/screens/myRequests.dart';
 import 'package:research_blogger/screens/signIn.dart';
 import 'package:research_blogger/screens/signUp.dart';
 
@@ -33,6 +34,13 @@ class AppRouter {
           final String id = settings.arguments as String;
           return MaterialPageRoute(
             builder: (_) => AuthorProfile(id: id),
+          );
+        }
+      case MY_REQUESTS:
+        {
+          final bool isMy = settings.arguments as bool;
+          return MaterialPageRoute(
+            builder: (_) => MyRequests(myRequest: isMy),
           );
         }
       default:

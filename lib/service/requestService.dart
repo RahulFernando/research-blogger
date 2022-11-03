@@ -36,4 +36,15 @@ class RequestService {
 
     return response;
   }
+
+  static Future<Response> delete(String id) async {
+    Response response = Response();
+
+    await _collectionReference.doc(id).delete();
+
+    response.status = 200;
+    response.message = "Removed successfully!";
+
+    return response;
+  }
 }

@@ -147,7 +147,7 @@ class _AuthorProfileState extends State<AuthorProfile> {
     });
 
     var response = await RequestService.create(Requests(
-        uid: user.id as String,
+        uid: user.uid as String,
         title: _titleController.text,
         language: _languageController.text,
         message: _messageController.text));
