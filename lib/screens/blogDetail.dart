@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:research_blogger/models/article.dart';
+import 'package:research_blogger/models/research.dart';
+import 'package:research_blogger/models/user.dart';
+import 'package:research_blogger/service/articleService.dart';
+import 'package:research_blogger/service/ideaService.dart';
+import 'package:research_blogger/service/researchService.dart';
+import 'package:research_blogger/service/userService.dart';
 
+import '../models/idea.dart';
 import '../utils/colorUtils.dart';
 
 class BlogDetail extends StatefulWidget {
@@ -16,9 +24,45 @@ class BlogDetail extends StatefulWidget {
 
 class _BlogDetailState extends State<BlogDetail> {
   bool isRead = false;
+  bool isLoading = false;
+
+  // objects
+  Idea idea = Idea(description: "", uid: "", id: "");
+  Research research = Research(category: "", description: "", uid: "", id: "");
+  Article article = Article(description: "", id: "", image: "", uid: "");
+  User user = User(id: "", uid: "", age: "", userName: "");
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.type == "idea") {
+      getIdeaById();
+    }
+
+    if (widget.type == "research") {
+      getResearchById();
+    }
+
+    if (widget.type == "article") {
+      getArticleById();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    var description = widget.type == "idea"
+        ? idea.description
+        : widget.type == "research"
+            ? research.description
+            : "";
+    var author = widget.type == "idea"
+        ? user.userName
+        : widget.type == "research"
+            ? user.userName
+            : widget.type == "article"
+        ? user.userName : "";
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -45,50 +89,104 @@ class _BlogDetailState extends State<BlogDetail> {
             elevation: 5,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Author",
-                          style: GoogleFonts.ptSans(
-                              fontSize: 20.0, color: Colors.black)),
-                      ElevatedButton(onPressed: () {}, child: const Text("View Profile")),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  widget.type == "article"
-                      ? Image.network(
-                          "https://cdn.pixabay.com/photo/2020/05/09/13/29/photographer-5149664_960_720.jpg")
-                      : Container(),
-                  Text("Description",
-                      style: GoogleFonts.ptSans(
-                          fontSize: 16.0, color: Colors.black)),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Mark as read", style: GoogleFonts.ptSans(
-                          fontSize: 17.0, color: Colors.black)),
-                      Checkbox(
-                        value: isRead,
-                        onChanged: (bool? newVal) => setState(() {
-                          isRead = newVal!;
-                        }),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Author: $author',
+                                style: GoogleFonts.ptSans(
+                                    fontSize: 20.0, color: Colors.black)),
+                            ElevatedButton(
+                                onPressed: () {},
+                                child: const Text("View Profile")),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        widget.type == "article" && article.image != ""
+                            ? Image.network(
+                                article.image as String)
+                            : Container(),
+                        Text(description,
+                            style: GoogleFonts.ptSans(
+                                fontSize: 16.0, color: Colors.black)),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Mark as read",
+                                style: GoogleFonts.ptSans(
+                                    fontSize: 17.0, color: Colors.black)),
+                            Checkbox(
+                              value: isRead,
+                              onChanged: (bool? newVal) => setState(() {
+                                isRead = newVal!;
+                              }),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  getIdeaById() async {
+    setState(() {
+      isLoading = true;
+    });
+    var response = await IdeaService.getById(widget.docId);
+    setState(() {
+      idea = response.data as Idea;
+    });
+    getUserById(idea.uid);
+  }
+
+  getResearchById() async {
+    setState(() {
+      isLoading = true;
+    });
+    var response = await ResearchService.getById(widget.docId);
+    setState(() {
+      research = response.data as Research;
+    });
+    getUserById(research.uid);
+  }
+
+  getArticleById() async {
+    setState(() {
+      isLoading = true;
+    });
+    var response = await ArticleService.getById(widget.docId);
+    setState(() {
+      article = response.data as Article;
+    });
+    getUserById(article.uid);
+  }
+
+  getUserById(id) async {
+    try {
+      var response = await UserService.getUser(id);
+      setState(() {
+        user = response.data as User;
+        isLoading = false;
+      });
+    } catch(e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }

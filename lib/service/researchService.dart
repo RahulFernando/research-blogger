@@ -21,4 +21,19 @@ class ResearchService {
 
     return response;
   }
+
+  static Future<Response> getById(String id) async {
+    Response response = Response();
+
+    await _collectionReference.doc(id).get().then((snapshot) {
+      response.status = 200;
+      response.message = "Fetch idea success";
+      response.data = Research.fromDocumentSnapshot(snapshot as DocumentSnapshot<Map<String, dynamic>>);
+    }).catchError((e) {
+      response.status = 500;
+      response.message = e.toString();
+    });
+
+    return response;
+  }
 }
