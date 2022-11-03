@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:research_blogger/constants.dart';
 import 'package:research_blogger/models/arguments.dart';
 import 'package:research_blogger/screens/addBlog.dart';
+import 'package:research_blogger/screens/authorProfile.dart';
 import 'package:research_blogger/screens/blogDetail.dart';
 import 'package:research_blogger/screens/home.dart';
 import 'package:research_blogger/screens/signIn.dart';
@@ -26,6 +27,13 @@ class AppRouter {
                     docId: args.docId,
                     type: args.type,
                   ));
+        }
+      case AUTHOR_PROFILE:
+        {
+          final String id = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (_) => AuthorProfile(id: id),
+          );
         }
       default:
         return MaterialPageRoute(builder: (_) => const SignIn());
