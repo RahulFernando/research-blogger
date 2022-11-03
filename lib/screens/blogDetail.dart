@@ -23,13 +23,12 @@ class BlogDetail extends StatefulWidget {
 }
 
 class _BlogDetailState extends State<BlogDetail> {
-  bool isRead = false;
   bool isLoading = false;
 
   // objects
-  Idea idea = Idea(description: "", uid: "", id: "");
-  Research research = Research(category: "", description: "", uid: "", id: "");
-  Article article = Article(description: "", id: "", image: "", uid: "");
+  Idea idea = Idea(description: "", uid: "", id: "", isRead: false);
+  Research research = Research(category: "", description: "", uid: "", id: "", isRead: false);
+  Article article = Article(description: "", id: "", image: "", uid: "", isRead: false);
   User user = User(id: "", uid: "", age: "", userName: "");
 
   @override
@@ -62,6 +61,13 @@ class _BlogDetailState extends State<BlogDetail> {
             ? user.userName
             : widget.type == "article"
         ? user.userName : "";
+    var isRead = widget.type == "idea"
+        ? idea.isRead
+        : widget.type == "research"
+        ? research.isRead
+        : widget.type == "article" ? article.isRead : false;
+
+    print(isRead);
 
     return Scaffold(
       appBar: AppBar(
@@ -128,9 +134,9 @@ class _BlogDetailState extends State<BlogDetail> {
                                     fontSize: 17.0, color: Colors.black)),
                             Checkbox(
                               value: isRead,
-                              onChanged: (bool? newVal) => setState(() {
-                                isRead = newVal!;
-                              }),
+                              onChanged: (bool? newVal) {
+                                onMarkRead(newVal);
+                              },
                             ),
                           ],
                         )
@@ -148,6 +154,7 @@ class _BlogDetailState extends State<BlogDetail> {
       isLoading = true;
     });
     var response = await IdeaService.getById(widget.docId);
+
     setState(() {
       idea = response.data as Idea;
     });
@@ -187,6 +194,32 @@ class _BlogDetailState extends State<BlogDetail> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  onMarkRead(bool? newVal) async {
+    if (widget.type == "idea") {
+      setState(() {
+        idea.isRead = newVal!;
+      });
+
+      await IdeaService.update(idea);
+    }
+
+    if (widget.type == "research") {
+      setState(() {
+        research.isRead = newVal!;
+      });
+
+      await ResearchService.update(research);
+    }
+
+    if (widget.type == "article") {
+      setState(() {
+        article.isRead = newVal!;
+      });
+
+      await ArticleService.update(article);
     }
   }
 }

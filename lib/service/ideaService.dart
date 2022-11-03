@@ -36,4 +36,18 @@ class IdeaService {
 
     return response;
   }
+
+  static Future<Response> update(Idea idea) async {
+    Response response = Response();
+
+    await _collectionReference.doc(idea.id).update(idea.toJson()).then((res) {
+      response.status = 200;
+      response.message = "Updated success";
+    }).catchError((e) {
+      response.status = 500;
+      response.message = e.toString();
+    });
+
+    return response;
+  }
 }

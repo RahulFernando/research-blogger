@@ -37,4 +37,19 @@ class ArticleService {
 
     return response;
   }
+
+
+  static Future<Response> update(Article article) async {
+    Response response = Response();
+
+    await _collectionReference.doc(article.id).update(article.toJson()).then((res) {
+      response.status = 200;
+      response.message = "Updated success";
+    }).catchError((e) {
+      response.status = 500;
+      response.message = e.toString();
+    });
+
+    return response;
+  }
 }
