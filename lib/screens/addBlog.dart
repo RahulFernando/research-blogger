@@ -287,13 +287,14 @@ class _AddBlogState extends State<AddBlog> {
                 ? const CircularProgressIndicator()
                 : reusableButton(context, "Add", () async {
                     var imageId = await uploadImage();
+                    var userId = FirebaseAuth.instance.currentUser?.uid;
 
                     setState(() {
                       isLoading = true;
                     });
 
                     var response = await ArticleService.create(Article(
-                        description: _articleController.text, image: imageId));
+                        description: _articleController.text, image: imageId, uid: userId as String));
 
                     if (response.status == 201) {
                       setState(() {
