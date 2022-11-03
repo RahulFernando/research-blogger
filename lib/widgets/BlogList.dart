@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:research_blogger/models/arguments.dart';
 
+import '../constants.dart';
 import '../models/article.dart';
 import '../models/idea.dart';
 import '../models/research.dart';
@@ -105,8 +107,13 @@ StreamBuilder<QuerySnapshot<Object?>> reusableIdeaResearchListHomeView(
 
           return InkWell(
             onTap: () {
-              if (collection == "ideas") print(idea.id);
-              if (collection == "researches") print(research.id);
+              Navigator.pushNamed(
+                context,
+                BLOG_DETAIL_SCREEN,
+                arguments: collection == "ideas"
+                    ? BlogDetailArguments(idea.id as String, "idea")
+                    : BlogDetailArguments(research.id as String, "research"),
+              );
             },
             child: Padding(
                 padding: const EdgeInsets.all(10),
@@ -116,8 +123,9 @@ StreamBuilder<QuerySnapshot<Object?>> reusableIdeaResearchListHomeView(
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(text, style:
-                        GoogleFonts.ptSans(fontSize: 16.0, color: Colors.black)),
+                        child: Text(text,
+                            style: GoogleFonts.ptSans(
+                                fontSize: 16.0, color: Colors.black)),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -217,7 +225,11 @@ StreamBuilder<QuerySnapshot<Object?>> reusableArticleListHomeView(
 
           return InkWell(
             onTap: () {
-              print(data.id);
+              Navigator.pushNamed(
+                context,
+                BLOG_DETAIL_SCREEN,
+                arguments: BlogDetailArguments(data.id as String, "article")
+              );
             },
             child: Padding(
                 padding: const EdgeInsets.all(10),
@@ -228,8 +240,9 @@ StreamBuilder<QuerySnapshot<Object?>> reusableArticleListHomeView(
                       Image.network(data.image as String),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(data.description, style:
-                        GoogleFonts.ptSans(fontSize: 16.0, color: Colors.black)),
+                        child: Text(data.description,
+                            style: GoogleFonts.ptSans(
+                                fontSize: 16.0, color: Colors.black)),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
