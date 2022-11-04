@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:research_blogger/models/requests.dart';
 import 'package:research_blogger/models/user.dart';
+import 'package:research_blogger/service/authService.dart';
 import 'package:research_blogger/service/requestService.dart';
 import 'package:research_blogger/service/userService.dart';
 import 'package:research_blogger/widgets/TextField.dart';
@@ -146,8 +147,10 @@ class _AuthorProfileState extends State<AuthorProfile> {
       isLoading = true;
     });
 
+
     var response = await RequestService.create(Requests(
-        uid: user.uid as String,
+        receiver: user.uid as String,
+        uid: AuthService.getCurrentUser().data.uid,
         title: _titleController.text,
         language: _languageController.text,
         message: _messageController.text));

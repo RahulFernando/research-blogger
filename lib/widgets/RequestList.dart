@@ -88,3 +88,60 @@ StreamBuilder<QuerySnapshot<Object?>> reusableRequestListView(
     },
   );
 }
+
+
+StreamBuilder<QuerySnapshot<Object?>> reusableReceivedRequestListView() {
+  var uid = FirebaseAuth.instance.currentUser?.uid;
+  final Stream<QuerySnapshot> _stream = FirebaseFirestore.instance
+      .collection("requests")
+      .where("receiver", isEqualTo: uid)
+      .snapshots();
+
+  return StreamBuilder<QuerySnapshot>(
+    stream: _stream,
+    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      if (snapshot.hasError) {
+        return const Text('Something went wrong');
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      return ListView(
+        children: snapshot.data!.docs.map((DocumentSnapshot document) {
+          var request = Requests.fromDocumentSnapshot(
+              document as DocumentSnapshot<Map<String, dynamic>>);
+
+          return Padding(
+              padding: const EdgeInsets.all(10),
+              child: Card(
+                elevation: 10,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Title: ${request.title}',
+                          style: GoogleFonts.ptSans(
+                              fontSize: 20.0, color: Colors.black)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Language: ${request.language}',
+                          style: GoogleFonts.ptSans(
+                              fontSize: 18.0, color: Colors.black)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Message: ${request.message}',
+                          style: GoogleFonts.ptSans(
+                              fontSize: 16.0, color: Colors.black)),
+                    ),
+                  ],
+                ),
+              ));
+        }).toList(),
+      );
+    },
+  );
+}

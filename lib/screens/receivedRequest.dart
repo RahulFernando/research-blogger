@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:research_blogger/service/requestService.dart';
 
 import '../utils/colorUtils.dart';
 import '../widgets/RequestList.dart';
 
-class MyRequests extends StatefulWidget {
-  final bool myRequest;
-
-  const MyRequests({Key? key, required this.myRequest}) : super(key: key);
+class ReceivedRequest extends StatefulWidget {
+  const ReceivedRequest({Key? key}) : super(key: key);
 
   @override
-  State<MyRequests> createState() => _MyRequestsState();
+  State<ReceivedRequest> createState() => _ReceivedRequestState();
 }
 
-class _MyRequestsState extends State<MyRequests> {
+class _ReceivedRequestState extends State<ReceivedRequest> {
   bool deleting = false;
 
   @override
@@ -21,7 +18,7 @@ class _MyRequestsState extends State<MyRequests> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "My Request",
+          "Requests",
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         flexibleSpace: Container(
@@ -38,17 +35,11 @@ class _MyRequestsState extends State<MyRequests> {
       ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
-        child: deleting ? const Center(child: CircularProgressIndicator(),) : widget.myRequest ? reusableRequestListView(widget.myRequest, (String id) async {
-          setState(() {
-            deleting = true;
-          });
-
-          await RequestService.delete(id);
-
-          setState(() {
-            deleting = false;
-          });
-        }): reusableReceivedRequestListView(),
+        child: deleting
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : reusableReceivedRequestListView(),
       ),
     );
   }
