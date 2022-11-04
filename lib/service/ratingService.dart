@@ -22,4 +22,29 @@ class RatingService {
 
     return response;
   }
+
+  static Future<Response> update(Rate rate) async {
+    Response response = Response();
+
+    await _collectionReference.doc(rate.id).update(rate.toJson()).then((res) {
+      response.status = 200;
+      response.message = "Comment updated!";
+    }).catchError((e) {
+      response.status = 500;
+      response.message = e.toString();
+    });
+
+    return response;
+  }
+
+  static Future<Response> delete(String id) async {
+    Response response = Response();
+
+    await _collectionReference.doc(id).delete();
+
+    response.status = 200;
+    response.message = "Removed successfully!";
+
+    return response;
+  }
 }

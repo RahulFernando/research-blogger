@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:research_blogger/constants.dart';
 import 'package:research_blogger/models/arguments.dart';
 import 'package:research_blogger/models/idea.dart';
+import 'package:research_blogger/models/rate.dart';
 import 'package:research_blogger/models/requests.dart';
 import 'package:research_blogger/screens/addBlog.dart';
 import 'package:research_blogger/screens/addComment.dart';
@@ -11,6 +12,7 @@ import 'package:research_blogger/screens/home.dart';
 import 'package:research_blogger/screens/myRequests.dart';
 import 'package:research_blogger/screens/signIn.dart';
 import 'package:research_blogger/screens/signUp.dart';
+import 'package:research_blogger/screens/updateComment.dart';
 import 'package:research_blogger/screens/updateMyRequest.dart';
 
 class AppRouter {
@@ -59,6 +61,13 @@ class AppRouter {
           final AddCommentArguments args = settings.arguments as AddCommentArguments;
           return MaterialPageRoute(
             builder: (_) => AddComment(arguments: args),
+          );
+        }
+      case UPDATE_COMMENT:
+        {
+          final Rate rate = settings.arguments as Rate;
+          return MaterialPageRoute(
+            builder: (_) => UpdateComment(rate: rate),
           );
         }
       default:

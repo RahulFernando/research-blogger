@@ -8,3 +8,4 @@ const AUTHOR_PROFILE = "/author-profile";
 const MY_REQUESTS = "/my-requests";
 const UPDATE_MY_REQUESTS = "/update-my-requests";
 const ADD_COMMENT = "/add-comment";
+const UPDATE_COMMENT = "/update-comment";
