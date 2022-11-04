@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:research_blogger/constants.dart';
 import 'package:research_blogger/models/article.dart';
 import 'package:research_blogger/models/research.dart';
 import 'package:research_blogger/models/user.dart';
@@ -29,7 +30,7 @@ class _BlogDetailState extends State<BlogDetail> {
   Idea idea = Idea(description: "", uid: "", id: "", isRead: false);
   Research research = Research(category: "", description: "", uid: "", id: "", isRead: false);
   Article article = Article(description: "", id: "", image: "", uid: "", isRead: false);
-  User user = User(id: "", uid: "", age: "", userName: "");
+  User user = User(id: "", uid: "", age: "", userName: "", email: "");
 
   @override
   void initState() {
@@ -109,7 +110,9 @@ class _BlogDetailState extends State<BlogDetail> {
                                 style: GoogleFonts.ptSans(
                                     fontSize: 20.0, color: Colors.black)),
                             ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushNamed(context, AUTHOR_PROFILE, arguments: user.uid);
+                                },
                                 child: const Text("View Profile")),
                           ],
                         ),
@@ -191,6 +194,7 @@ class _BlogDetailState extends State<BlogDetail> {
         isLoading = false;
       });
     } catch(e) {
+      print(e);
       setState(() {
         isLoading = false;
       });

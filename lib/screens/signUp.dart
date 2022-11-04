@@ -107,6 +107,7 @@ class _SignUpState extends State<SignUp> {
                             var res = await UserService.create(User(
                                 uid: response.data.uid,
                                 userName: _userNameController.text,
+                                email: _emailController.text,
                                 age: _ageController.text));
 
                             print(res.status);

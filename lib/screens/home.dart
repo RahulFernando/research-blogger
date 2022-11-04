@@ -3,6 +3,7 @@ import 'package:research_blogger/screens/blog.dart';
 import 'package:research_blogger/screens/profile.dart';
 import 'package:research_blogger/service/userService.dart';
 
+import '../constants.dart';
 import '../utils/colorUtils.dart';
 import '../widgets/BlogList.dart';
 import '../widgets/IconButtonBar.dart';
@@ -118,6 +119,24 @@ class _HomeScreenState extends State<HomeScreen> {
           "Home",
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, MY_REQUESTS, arguments: true);
+            },
+            icon: const Icon(
+              Icons.messenger,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.inbox_rounded,
+              color: Colors.white,
+            ),
+          ),
+        ],
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
