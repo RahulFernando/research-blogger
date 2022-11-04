@@ -137,7 +137,8 @@ class _AddBlogState extends State<AddBlog> {
                   var userId = FirebaseAuth.instance.currentUser?.uid;
                   var response = await IdeaService.create(Idea(
                       description: _ideaController.text,
-                      uid: userId as String));
+                      uid: userId as String,
+                      isRead: false));
 
                   if (response.status == 201) {
                     setState(() {
@@ -216,7 +217,8 @@ class _AddBlogState extends State<AddBlog> {
                     var response = await ResearchService.create(Research(
                         category: profession,
                         description: _researchController.text,
-                        uid: userId as String));
+                        uid: userId as String,
+                        isRead: false));
 
                     if (response.status == 201) {
                       setState(() {
@@ -294,7 +296,7 @@ class _AddBlogState extends State<AddBlog> {
                     });
 
                     var response = await ArticleService.create(Article(
-                        description: _articleController.text, image: imageId, uid: userId as String));
+                        description: _articleController.text, image: imageId, uid: userId as String, isRead: false));
 
                     if (response.status == 201) {
                       setState(() {

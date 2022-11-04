@@ -47,4 +47,19 @@ class RequestService {
 
     return response;
   }
+
+
+  static Future<Response> update(Requests requests) async {
+    Response response = Response();
+
+    await _collectionReference.doc(requests.id).set(requests.toJson()).then((e) {
+      response.status = 200;
+      response.message = "Request updated";
+    }).catchError((e) {
+      response.status = 500;
+      response.message = e.toString();
+    });
+
+    return response;
+  }
 }

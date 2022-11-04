@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:research_blogger/constants.dart';
 import 'package:research_blogger/models/requests.dart';
 
 StreamBuilder<QuerySnapshot<Object?>> reusableRequestListView(
@@ -60,7 +61,9 @@ StreamBuilder<QuerySnapshot<Object?>> reusableRequestListView(
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushNamed(context, UPDATE_MY_REQUESTS, arguments: request);
+                            },
                             child: const Text("Edit"),
                           ),
                         ),
