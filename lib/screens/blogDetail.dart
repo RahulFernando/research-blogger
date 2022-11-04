@@ -151,7 +151,7 @@ class _BlogDetailState extends State<BlogDetail> {
                             height: 20,
                           ),
                           widget.type == "article" && article.image != ""
-                              ? Image.network(article.image as String)
+                              ? Image.network(article.image as String, height: 300, width: MediaQuery.of(context).size.width,)
                               : Container(),
                           Text(description,
                               style: GoogleFonts.ptSans(
