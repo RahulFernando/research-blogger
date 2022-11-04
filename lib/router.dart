@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:research_blogger/constants.dart';
 import 'package:research_blogger/models/arguments.dart';
+import 'package:research_blogger/models/idea.dart';
 import 'package:research_blogger/models/requests.dart';
 import 'package:research_blogger/screens/addBlog.dart';
+import 'package:research_blogger/screens/addComment.dart';
 import 'package:research_blogger/screens/authorProfile.dart';
 import 'package:research_blogger/screens/blogDetail.dart';
 import 'package:research_blogger/screens/home.dart';
@@ -50,6 +52,13 @@ class AppRouter {
           final Requests request = settings.arguments as Requests;
           return MaterialPageRoute(
             builder: (_) => UpdateMyRequest(requests: request),
+          );
+        }
+      case ADD_COMMENT:
+        {
+          final AddCommentArguments args = settings.arguments as AddCommentArguments;
+          return MaterialPageRoute(
+            builder: (_) => AddComment(arguments: args),
           );
         }
       default:
