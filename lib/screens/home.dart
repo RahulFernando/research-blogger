@@ -1,9 +1,20 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:research_blogger/models/article.dart';
 import 'package:research_blogger/screens/blog.dart';
 import 'package:research_blogger/screens/profile.dart';
 import 'package:research_blogger/service/userService.dart';
 
 import '../constants.dart';
+import '../models/idea.dart';
+import '../models/research.dart';
 import '../utils/colorUtils.dart';
 import '../widgets/BlogList.dart';
 import '../widgets/IconButtonBar.dart';
@@ -94,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String selectedOption = "Idea";
 
   String foundUserId = "";
+  bool isDownloading = false;
 
   onSearchChange(String value) async {
     try {
@@ -189,13 +201,116 @@ class _HomeScreenState extends State<HomeScreen> {
                       selectedOption == "Research"
                           ? '${selectedOption.toLowerCase()}es'
                           : '${selectedOption.toLowerCase()}s',
-                      foundUserId)
+                      foundUserId, addToFavourite)
                   : reusableArticleListHomeView(
-                      '${selectedOption.toLowerCase()}s', foundUserId),
+                      '${selectedOption.toLowerCase()}s', foundUserId, addToFavourite, download, isDownloading),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void addToFavourite(String collection, Idea? idea, Research? research, Article? article) {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final CollectionReference _collectionReference = _firestore.collection(
+        "favourites");
+
+    if (collection == "ideas" && idea != null) {
+      _collectionReference.doc().set({
+        "category": "idea",
+        "uid": FirebaseAuth.instance.currentUser?.uid,
+        "post": idea.toJson(),
+      }).then((val) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Successfully added!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }).catchError((e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Something wrong!"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      });
+    }
+
+    if (collection == "researches" && research != null) {
+      _collectionReference.doc().set({
+        "category": "research",
+        "uid": FirebaseAuth.instance.currentUser?.uid,
+        "post": research.toJson(),
+      }).then((val) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Successfully added!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }).catchError((e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Something wrong!"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      });
+    }
+
+    if (collection == "articles" && article != null) {
+      _collectionReference.doc().set({
+        "category": "article",
+        "uid": FirebaseAuth.instance.currentUser?.uid,
+        "post": article.toJson(),
+      }).then((val) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Successfully added!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }).catchError((e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Something wrong!"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      });
+    }
+  }
+
+  Future download(String path) async {
+    setState(() {
+      isDownloading = true;
+    });
+    try {
+      final ref = FirebaseStorage.instance.ref().child(path);
+      final url = await ref.getDownloadURL();
+
+      final appDir = await getTemporaryDirectory();
+      final filePath = '${appDir.path}/${ref.name}';
+
+      await Dio().download(url, filePath);
+
+      await GallerySaver.saveImage(filePath, toDcim: true);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Successfully downloaded!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch(e) {
+      print(e.toString());
+    } finally {
+      setState(() {
+        isDownloading = false;
+      });
+    }
+
   }
 }

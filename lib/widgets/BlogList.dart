@@ -68,7 +68,11 @@ StreamBuilder<QuerySnapshot<Object?>> reusableIdeaResearchListView(
 }
 
 StreamBuilder<QuerySnapshot<Object?>> reusableIdeaResearchListHomeView(
-    String collection, String? uid) {
+    String collection,
+    String? uid,
+    Function(
+            String collection, Idea? idea, Research? research, Article? article)
+        addToFavourite) {
   final Stream<QuerySnapshot> _stream = uid != ""
       ? FirebaseFirestore.instance
           .collection(collection)
@@ -130,15 +134,14 @@ StreamBuilder<QuerySnapshot<Object?>> reusableIdeaResearchListHomeView(
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                addToFavourite(
+                                    collection, idea, research, null);
+                              },
                               child: const Text("Save"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text("Download"),
                             ),
                           ],
                         ),
@@ -199,7 +202,12 @@ StreamBuilder<QuerySnapshot<Object?>> reusableArticleListView(
 }
 
 StreamBuilder<QuerySnapshot<Object?>> reusableArticleListHomeView(
-    String collection, String? uid) {
+    String collection,
+    String? uid,
+    Function(
+            String collection, Idea? idea, Research? research, Article? article)
+        addToFavourite,
+    Function(String path) download, bool downloading) {
   final Stream<QuerySnapshot> _stream = uid != ""
       ? FirebaseFirestore.instance
           .collection(collection)
@@ -225,11 +233,8 @@ StreamBuilder<QuerySnapshot<Object?>> reusableArticleListHomeView(
 
           return InkWell(
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                BLOG_DETAIL_SCREEN,
-                arguments: BlogDetailArguments(data.id as String, "article")
-              );
+              Navigator.pushNamed(context, BLOG_DETAIL_SCREEN,
+                  arguments: BlogDetailArguments(data.id as String, "article"));
             },
             child: Padding(
                 padding: const EdgeInsets.all(10),
@@ -250,12 +255,14 @@ StreamBuilder<QuerySnapshot<Object?>> reusableArticleListHomeView(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                addToFavourite("articles", null, null, data);
+                              },
                               child: const Text("Save"),
                             ),
                             ElevatedButton(
-                              onPressed: () {},
-                              child: const Text("Download"),
+                              onPressed: () {download(data.imagePath as String);},
+                              child: Text(downloading ? "Please wait..." : "Download"),
                             ),
                           ],
                         ),

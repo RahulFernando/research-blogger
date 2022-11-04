@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:research_blogger/models/article.dart';
 import 'package:research_blogger/models/idea.dart';
 import 'package:research_blogger/models/research.dart';
@@ -53,9 +54,8 @@ class _AddBlogState extends State<AddBlog> {
     }
   }
 
-  Future<String> uploadImage() async {
-    String id = const Uuid().v4();
-    final ref = FirebaseStorage.instance.ref().child('images/$id');
+  Future<String> uploadImage(String id, String path) async {
+    final ref = FirebaseStorage.instance.ref().child(path);
     UploadTask task = ref.putFile(File(image!.path!));
 
     return await (await task).ref.getDownloadURL();
@@ -288,7 +288,11 @@ class _AddBlogState extends State<AddBlog> {
             isLoading
                 ? const CircularProgressIndicator()
                 : reusableButton(context, "Add", () async {
-                    var imageId = await uploadImage();
+                    String id = const Uuid().v4();
+                    final type = lookupMimeType(image?.path as String)?.split('/').last;
+                    var path = "images/$id.${type!}";
+
+                    var imageId = await uploadImage(id, path);
                     var userId = FirebaseAuth.instance.currentUser?.uid;
 
                     setState(() {
@@ -296,7 +300,11 @@ class _AddBlogState extends State<AddBlog> {
                     });
 
                     var response = await ArticleService.create(Article(
-                        description: _articleController.text, image: imageId, uid: userId as String, isRead: false));
+                        description: _articleController.text,
+                        image: imageId,
+                        imagePath: path,
+                        uid: userId as String,
+                        isRead: false));
 
                     if (response.status == 201) {
                       setState(() {
