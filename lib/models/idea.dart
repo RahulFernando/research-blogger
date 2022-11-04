@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:research_blogger/models/rate.dart';
 
 class Idea {
   String? id;

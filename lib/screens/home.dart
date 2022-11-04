@@ -9,6 +9,7 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:research_blogger/models/article.dart';
 import 'package:research_blogger/screens/blog.dart';
+import 'package:research_blogger/screens/myComments.dart';
 import 'package:research_blogger/screens/profile.dart';
 import 'package:research_blogger/service/userService.dart';
 
@@ -32,6 +33,7 @@ class _HomeState extends State<Home> {
   final screens = [
     const HomeScreen(),
     const Blog(),
+    const MyComments(),
     const Profile(),
   ];
 
@@ -73,11 +75,19 @@ class _HomeState extends State<Home> {
                           });
                         }),
                     IconButtonBar(
-                        icon: Icons.account_circle,
+                        icon: Icons.comment_sharp,
                         selected: _selectedPage == 2,
                         onPressed: () {
                           setState(() {
                             _selectedPage = 2;
+                          });
+                        }),
+                    IconButtonBar(
+                        icon: Icons.account_circle,
+                        selected: _selectedPage == 3,
+                        onPressed: () {
+                          setState(() {
+                            _selectedPage = 3;
                           });
                         }),
                   ],
@@ -142,9 +152,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, MY_REQUESTS, arguments: false);
+            },
             icon: const Icon(
-              Icons.inbox_rounded,
+              Icons.notifications,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, SIGN_IN_SCREEN);
+            },
+            icon: const Icon(
+              Icons.power_settings_new,
               color: Colors.white,
             ),
           ),

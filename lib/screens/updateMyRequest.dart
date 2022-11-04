@@ -98,7 +98,8 @@ class _UpdateMyRequestState extends State<UpdateMyRequest> {
         title: _titleController.text,
         language: _languageController.text,
         message: _messageController.text,
-        id: widget.requests.id));
+        id: widget.requests.id,
+        receiver: widget.requests.receiver));
 
     if (response.status == 200) {
       ScaffoldMessenger.of(context).showSnackBar(

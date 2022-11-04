@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:research_blogger/constants.dart';
+import 'package:research_blogger/models/arguments.dart';
 import 'package:research_blogger/models/article.dart';
 import 'package:research_blogger/models/research.dart';
 import 'package:research_blogger/models/user.dart';
@@ -10,7 +12,9 @@ import 'package:research_blogger/service/researchService.dart';
 import 'package:research_blogger/service/userService.dart';
 
 import '../models/idea.dart';
+import '../models/rate.dart';
 import '../utils/colorUtils.dart';
+import '../widgets/RatingList.dart';
 
 class BlogDetail extends StatefulWidget {
   final String docId;
@@ -28,8 +32,10 @@ class _BlogDetailState extends State<BlogDetail> {
 
   // objects
   Idea idea = Idea(description: "", uid: "", id: "", isRead: false);
-  Research research = Research(category: "", description: "", uid: "", id: "", isRead: false);
-  Article article = Article(description: "", id: "", image: "", uid: "", isRead: false);
+  Research research =
+      Research(category: "", description: "", uid: "", id: "", isRead: false);
+  Article article =
+      Article(description: "", id: "", image: "", uid: "", isRead: false);
   User user = User(id: "", uid: "", age: "", userName: "", email: "");
 
   @override
@@ -51,6 +57,11 @@ class _BlogDetailState extends State<BlogDetail> {
 
   @override
   Widget build(BuildContext context) {
+    var relatedPostId = widget.type == "idea"
+        ? idea.id
+        : widget.type == "research"
+            ? research.id
+            : article.id;
     var description = widget.type == "idea"
         ? idea.description
         : widget.type == "research"
@@ -61,14 +72,15 @@ class _BlogDetailState extends State<BlogDetail> {
         : widget.type == "research"
             ? user.userName
             : widget.type == "article"
-        ? user.userName : "";
+                ? user.userName
+                : "";
     var isRead = widget.type == "idea"
         ? idea.isRead
         : widget.type == "research"
-        ? research.isRead
-        : widget.type == "article" ? article.isRead : false;
-
-    print(isRead);
+            ? research.isRead
+            : widget.type == "article"
+                ? article.isRead
+                : false;
 
     return Scaffold(
       appBar: AppBar(
@@ -88,65 +100,89 @@ class _BlogDetailState extends State<BlogDetail> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: "Comment",
+        onPressed: () {
+          var collection = widget.type == "idea"
+              ? "ideas"
+              : widget.type == "research"
+                  ? "researches"
+                  : "articles";
+          Navigator.pushNamed(context, ADD_COMMENT,
+              arguments: AddCommentArguments(
+                  collection: collection,
+                  article: article,
+                  idea: idea,
+                  research: research));
+        },
+        child: const Icon(Icons.add_outlined),
+      ),
       body: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.all(12),
-        child: SingleChildScrollView(
-          child: Card(
-            elevation: 5,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
-              child: isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Author: $author',
-                                style: GoogleFonts.ptSans(
-                                    fontSize: 20.0, color: Colors.black)),
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, AUTHOR_PROFILE, arguments: user.uid);
+        child: Column(
+          children: [
+            Card(
+              elevation: 5,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+                child: isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Author: $author',
+                                  style: GoogleFonts.ptSans(
+                                      fontSize: 20.0, color: Colors.black)),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, AUTHOR_PROFILE,
+                                        arguments: user.uid);
+                                  },
+                                  child: const Text("View Profile")),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          widget.type == "article" && article.image != ""
+                              ? Image.network(article.image as String)
+                              : Container(),
+                          Text(description,
+                              style: GoogleFonts.ptSans(
+                                  fontSize: 16.0, color: Colors.black)),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Mark as read",
+                                  style: GoogleFonts.ptSans(
+                                      fontSize: 17.0, color: Colors.black)),
+                              Checkbox(
+                                value: isRead,
+                                onChanged: (bool? newVal) {
+                                  onMarkRead(newVal);
                                 },
-                                child: const Text("View Profile")),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        widget.type == "article" && article.image != ""
-                            ? Image.network(
-                                article.image as String)
-                            : Container(),
-                        Text(description,
-                            style: GoogleFonts.ptSans(
-                                fontSize: 16.0, color: Colors.black)),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Mark as read",
-                                style: GoogleFonts.ptSans(
-                                    fontSize: 17.0, color: Colors.black)),
-                            Checkbox(
-                              value: isRead,
-                              onChanged: (bool? newVal) {
-                                onMarkRead(newVal);
-                              },
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+              ),
             ),
-          ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Text("Comments"),
+            Expanded(child: reusableCommentSectionList(relatedPostId!)),
+          ],
         ),
       ),
     );
@@ -193,7 +229,7 @@ class _BlogDetailState extends State<BlogDetail> {
         user = response.data as User;
         isLoading = false;
       });
-    } catch(e) {
+    } catch (e) {
       print(e);
       setState(() {
         isLoading = false;
