@@ -162,6 +162,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             onPressed: () {
+              Navigator.pushNamed(context, FAVOURITE);
+            },
+            icon: const Icon(
+              Icons.favorite,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
               FirebaseAuth.instance.signOut();
               Navigator.pushReplacementNamed(context, SIGN_IN_SCREEN);
             },
