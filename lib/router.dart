@@ -8,6 +8,7 @@ import 'package:research_blogger/screens/addBlog.dart';
 import 'package:research_blogger/screens/addComment.dart';
 import 'package:research_blogger/screens/authorProfile.dart';
 import 'package:research_blogger/screens/blogDetail.dart';
+import 'package:research_blogger/screens/favourite.dart';
 import 'package:research_blogger/screens/home.dart';
 import 'package:research_blogger/screens/myRequests.dart';
 import 'package:research_blogger/screens/signIn.dart';
@@ -70,6 +71,11 @@ class AppRouter {
             builder: (_) => UpdateComment(rate: rate),
           );
         }
+
+      case FAVOURITE:
+        return MaterialPageRoute(
+          builder: (_) => const Favourites(),
+        );
       default:
         return MaterialPageRoute(builder: (_) => const SignIn());
     }
